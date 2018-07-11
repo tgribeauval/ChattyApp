@@ -15,42 +15,43 @@ class App extends Component {
     super(props);
     this.socket = new WebSocket("ws://localhost:3001");
     this.state = {
-                  currentUser: {name: "Bob"}, // optional. if currentUser is not defined, it means the user is Anonymous
-                  messages:
-             };
-           }
+          currentUser: {name: "Bob"}, // optional. if currentUser is not defined, it means the user is Anonymous
+          messages: []
+     }
+   }
 
          componentDidMount() {
 
            const ws = this.socket;
-           ws.open = function (event) {
+           ws.onopen = function (event) {
              console.log('Client Connected to Server')
            };
-
+           ws.onmessage = (event) => {
+             const incomingMessage= JSON.parse(event.data);
+             const newListMessages = this.state.messages.concat(incomingMessage)
+             this.setState({messages: newListMessages})
+           }
            console.log("componentDidMount <App />");
-           setTimeout(() => {
-             console.log("Simulating incoming message");
-             // Add a new message to the list of messages in the data store
-             const newMessage = {id: 3, username: "Michelle", content: "Hello there!"};
-             const messages = this.state.messages.concat(newMessage)
-             // Update the state of the app component.
-             // Calling setState will trigger a call to render() in App and all child components.
-             this.setState({messages: messages})
-           }, 3000);
          }
   onMessageSubmit = (event) => {
-    console.log('arr we here?')
+    console.log(this.state)
     if (event.key == 'Enter'){
-      const messageText = document.getElementById("messageText").value;
+      const messageText = event.target.value
       const newMessage = {
-        id: generateRandomString(),
         username: this.state.currentUser.name,
         content: messageText
       }
       const messages = this.state.messages.concat(newMessage)
-      this.setState({messages: messages})
+
       this.socket.send(JSON.stringify(newMessage))
       document.getElementById("messageText").value = "";
+    }
+  }
+
+  handleNewUsername = event => {
+    if (event.key == 'Enter'){
+      const userInput = event.target.value
+      this.setState({currentUser: {name: userInput}})
     }
   }
 
@@ -59,7 +60,7 @@ class App extends Component {
       <div>
         <NavBar/>
         <MessageList messages={this.state.messages}/>
-        <CharBar currentUser={this.state.currentUser.name} onMessageSubmit={this.onMessageSubmit}/>
+        <CharBar currentUser={this.state.currentUser.name} handleNewUsername={this.handleNewUsername} onMessageSubmit={this.onMessageSubmit}/>
       </div>
     );
   }
