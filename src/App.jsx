@@ -43,14 +43,15 @@ class App extends Component {
            }, 3000);
          }
   onMessageSubmit = (event) => {
+    console.log('arr we here?')
     if (event.key == 'Enter'){
       const messageText = document.getElementById("messageText").value;
       const newMessage = {
         id: generateRandomString(),
-        username: 'Anonymous',
+        username: this.state.currentUser,
         content: messageText
       }
-      const messages = this.state.messages.concat(newMessage)
+      const messages = this.state.messages.concat(JSON.stringify(newMessage))
       this.setState({messages: messages})
       document.getElementById("messageText").value = "";
     }
