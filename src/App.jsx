@@ -13,24 +13,20 @@ return Math.floor((1 + Math.random()) * 0x1000000).toString(16).substring(1);
 class App extends Component {
   constructor(props) {
     super(props);
+    this.socket = new WebSocket("ws://localhost:3001");
     this.state = {
                   currentUser: {name: "Bob"}, // optional. if currentUser is not defined, it means the user is Anonymous
-                  messages: [
-                 {
-                  id: 1,
-                  username: "Bob",
-                  content: "Has anyone seen my marbles?",
-                 },
-                 {
-                   id: 2,
-                   username: "Anonymous",
-                   content: "No, I think you lost them. You lost your marbles Bob. You lost them for good."
-                 }
-               ]
-             }
+                  messages:
+             };
            }
 
          componentDidMount() {
+
+           const ws = this.socket;
+           ws.open = function (event) {
+             console.log('Client Connected to Server')
+           };
+
            console.log("componentDidMount <App />");
            setTimeout(() => {
              console.log("Simulating incoming message");
@@ -48,11 +44,12 @@ class App extends Component {
       const messageText = document.getElementById("messageText").value;
       const newMessage = {
         id: generateRandomString(),
-        username: this.state.currentUser,
+        username: this.state.currentUser.name,
         content: messageText
       }
-      const messages = this.state.messages.concat(JSON.stringify(newMessage))
+      const messages = this.state.messages.concat(newMessage)
       this.setState({messages: messages})
+      this.socket.send(JSON.stringify(newMessage))
       document.getElementById("messageText").value = "";
     }
   }
