@@ -26,9 +26,10 @@ class App extends Component {
            ws.onopen = function (event) {
              console.log('Client Connected to Server')
            };
-           ws.onmessage = (event) => {
-             const incomingMessage= JSON.parse(event.data);
+           ws.onmessage = (message) => {
+             const incomingMessage= JSON.parse(message.data);
              const newListMessages = this.state.messages.concat(incomingMessage)
+             
              this.setState({messages: newListMessages})
            }
            console.log("componentDidMount <App />");
@@ -38,6 +39,7 @@ class App extends Component {
     if (event.key == 'Enter'){
       const messageText = event.target.value
       const newMessage = {
+        type: 'postMessage',
         username: this.state.currentUser.name,
         content: messageText
       }
@@ -50,8 +52,14 @@ class App extends Component {
 
   handleNewUsername = event => {
     if (event.key == 'Enter'){
-      const userInput = event.target.value
-      this.setState({currentUser: {name: userInput}})
+      const oldUsername = this.state.currentUser.name
+      const newUsername = event.target.value
+      this.setState({currentUser: {name: newUsername}})
+      const notification = {
+        type: "postNotification",
+        content: `${oldUsername} has changed his username to ${newUsername}`
+      }
+      this.socket.send(JSON.stringify(notification));
     }
   }
 

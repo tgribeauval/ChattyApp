@@ -26,9 +26,20 @@ wss.broadcast = function broadcast(data) {
 // the ws parameter in the callback.
 wss.on('connection', (ws) => {
   console.log('Client connected');
+
 ws.on('message', function(message) {
   let msg = JSON.parse(message)
   msg["id"]= uuidv4()
+  switch(msg.type) {
+    case 'postMessage':
+      msg.type = 'incomingMessage';
+    break;
+    case 'postNotification':
+      msg.type = 'incomingNotification';
+    break;
+    default:
+    throw new Error("Unknown event type" + message.type )
+  }
   wss.broadcast(JSON.stringify(msg))
   console.log('msg', msg);
 })

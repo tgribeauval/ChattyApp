@@ -6,15 +6,25 @@ class MessageList extends Component {
   render(){
 
     const messageList = this.props.messages.map((message) => {
-      console.log(message.id);
-     return <Message key={message.id} message={message} />
- })
+      console.log(message);
+      if (message.type == 'incomingNotification') {
+       return (
+        <div className="message system">
+         {message.content}
+        </div>
+       )
+      }
+      if (message.type == 'incomingMessage') {
+        return (
+          <Message key={message.id} message={message} />
+        )
+      }
+
+   }
+ )
     return (
       <main className="messages">
        {messageList}
-        <div className="message system">
-
-        </div>
       </main>
     )
   }
