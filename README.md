@@ -8,6 +8,7 @@ As the name implies, the web app consists of a chat log where different users fr
 
 ## Screenshots
 
+![screenshot](https://user-images.githubusercontent.com/36380615/42705884-d2634922-86a2-11e8-9c25-bb52b8345aab.jpg)
 
 ### Getting Started
 
