@@ -4,7 +4,7 @@
 ## Description
 
 Chatty App is a project we completed on week 6 of our LightHouseLabs bootcamp.
-As the name implies, the web app consists of a chat log where different users from different browsers can communicate. Tt was built with React, WebSockets, Webpack and Babel.
+As the name implies, the web app consists of a chat log where different users from different browsers can communicate with each other. It was built with React, WebSockets, Webpack and Babel.
 
 ## Screenshots
 
