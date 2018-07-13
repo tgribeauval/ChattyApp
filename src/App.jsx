@@ -15,7 +15,7 @@ class App extends Component {
     super(props);
     this.socket = new WebSocket("ws://localhost:3001");
     this.state = {
-          currentUser: {name: "Bob"}, // optional. if currentUser is not defined, it means the user is Anonymous
+          currentUser: {name: "Anonymous"}, // optional. if currentUser is not defined, it means the user is Anonymous
           messages: [],
           connectedUsersLength: 0
      }
