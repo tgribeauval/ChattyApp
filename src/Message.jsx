@@ -1,3 +1,7 @@
+
+// line 11 returns the username
+// line 12 returns the content of what user entered into the input box
+
 import React, {Component} from 'react';
 
 class Message extends Component {

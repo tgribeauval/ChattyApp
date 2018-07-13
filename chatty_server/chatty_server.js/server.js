@@ -16,9 +16,9 @@ const server = express()
 const wss = new SocketServer.Server({ server });
 
 
-wss.broadcast = function broadcast(data) {
-  wss.clients.forEach(function each(client) {
-      client.send(data);
+wss.broadcast = function broadcast(data) { // data is what we are sending from App.jsx to servr
+  wss.clients.forEach(function each(client) { // looping through each client connected to the server
+      client.send(data); // sending the data to each client
   });
 };
 
@@ -30,30 +30,30 @@ wss.on('connection', (ws) => {
   wss.clients.forEach(client=>{
     console.log('readyState: '+client.readyState);
     console.log('SocketOpen: '+ SocketServer.OPEN)
-    if(client.readyState === SocketServer.OPEN){
-      client.send(
-        JSON.stringify({
-          type: 'usersOnline',
-          userslength: wss.clients.size
+    if(client.readyState === SocketServer.OPEN){ // if client is ready to receive messages, SocketServer represents the status of the server when a client is connected
+      client.send( // when client is connect run send the folling code to the App.jsx file
+        JSON.stringify({ // stringify it
+          type: 'usersOnline', // set a type
+          userslength: wss.clients.size // many how clients are connected to the server
         })
       )
     }
   })
 
-ws.on('message', function(message) {
-  let msg = JSON.parse(message)
-  msg["id"]= uuidv4()
-  switch(msg.type) {
-    case 'postMessage':
-      msg.type = 'incomingMessage';
-    break;
-    case 'postNotification':
+ws.on('message', function(message) { // when the server receives a message, run this function:
+  let msg = JSON.parse(message) // create a variable turns the message string into an object
+  msg["id"]= uuidv4() // add a unique identifier to this object
+  switch(msg.type) { // sort of like an if statement, switch is checking the type of the msg
+    case 'postMessage': // if the type is 'postMesssge'
+      msg.type = 'incomingMessage'; //set its type to incomingMessage
+    break; // break out of this function if condition is true
+    case 'postNotification': //same concept as above
       msg.type = 'incomingNotification';
     break;
-    default:
+    default: // if none of the conditions are found, run this:
     throw new Error("Unknown event type" + message.type )
   }
-  wss.broadcast(JSON.stringify(msg))
+  wss.broadcast(JSON.stringify(msg)) // refers to function on line 19
   console.log('msg', msg);
 })
   // Set up a callback for when a client closes the socket. This usually means they closed their browser.
