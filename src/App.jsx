@@ -16,24 +16,42 @@ class App extends Component {
     this.socket = new WebSocket("ws://localhost:3001");
     this.state = {
           currentUser: {name: "Bob"}, // optional. if currentUser is not defined, it means the user is Anonymous
-          messages: []
+          messages: [],
+          connectedUsersLength: 0
      }
    }
 
-         componentDidMount() {
+   componentDidMount() {
+     const that = this
+     const ws = this.socket;
+     ws.onopen = function (event) {
 
-           const ws = this.socket;
-           ws.onopen = function (event) {
-             console.log('Client Connected to Server')
-           };
-           ws.onmessage = (message) => {
-             const incomingMessage= JSON.parse(message.data);
-             const newListMessages = this.state.messages.concat(incomingMessage)
-             
-             this.setState({messages: newListMessages})
-           }
-           console.log("componentDidMount <App />");
-         }
+       console.log('Client Connected to Server')
+     };
+     ws.onmessage = (message) => {
+       const incomingMessage= JSON.parse(message.data);
+       if(incomingMessage.type === 'usersOnline'){
+         that.setState({connectedUsersLength: incomingMessage.userslength})
+       }else{
+         const newListMessages = this.state.messages.concat(incomingMessage)
+         that.setState({messages: newListMessages})
+       }
+
+
+     }
+     console.log("componentDidMount <App />");
+   }
+
+  render() {
+    return (
+      <div>
+        <NavBar usersOnline={this.state.connectedUsersLength}/>
+        <MessageList messages={this.state.messages}/>
+        <CharBar currentUser={this.state.currentUser.name} handleNewUsername={this.handleNewUsername} onMessageSubmit={this.onMessageSubmit}/>
+      </div>
+    );
+  }
+
   onMessageSubmit = (event) => {
     console.log(this.state)
     if (event.key == 'Enter'){
@@ -61,16 +79,6 @@ class App extends Component {
       }
       this.socket.send(JSON.stringify(notification));
     }
-  }
-
-  render() {
-    return (
-      <div>
-        <NavBar/>
-        <MessageList messages={this.state.messages}/>
-        <CharBar currentUser={this.state.currentUser.name} handleNewUsername={this.handleNewUsername} onMessageSubmit={this.onMessageSubmit}/>
-      </div>
-    );
   }
 }
 export default App;
